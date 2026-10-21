@@ -352,6 +352,7 @@ textarea{min-height:70px;resize:vertical}
 <script>
 (function(){
   var ENDPOINT='https://formsubmit.co/ajax/admin@levenstein.net';
+  var SHEET='https://script.google.com/macros/s/AKfycbychovhA8C1z56_YCG1hk5ODFqn2PRgi98IDENh1Me4dl_iGXs6ydNgYUPsT8MT-oLQ/exec';
   var modal=document.getElementById('modal'),form=document.getElementById('joinform');
   var sets=[].slice.call(form.querySelectorAll('fieldset')),dots=[].slice.call(form.querySelectorAll('.steps i'));
   var nextB=document.getElementById('next'),backB=document.getElementById('back'),err=document.getElementById('err');
@@ -386,6 +387,7 @@ textarea{min-height:70px;resize:vertical}
     var data={};new FormData(form).forEach(function(v,k){if(k==='_honey')return;data[k]=data[k]?data[k]+', '+v:v});
     data._subject='Golden Hour Club — new request: '+(data.Name||'');data._template='table';data._captcha='false';
     nextB.disabled=true;nextB.textContent='Sending…';
+    try{fetch(SHEET,{method:'POST',mode:'no-cors',body:new URLSearchParams(data)})}catch(x){}
     fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
       .then(function(r){if(!r.ok)throw 0;return r.json()})
       .then(function(){form.style.display='none';document.getElementById('done').style.display='block';store('ghc-done','1')})
