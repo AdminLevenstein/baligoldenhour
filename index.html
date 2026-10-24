@@ -153,7 +153,7 @@ textarea{min-height:70px;resize:vertical}
 .done{text-align:center;display:none;padding-top:20px!important}
 .done h2{color:var(--sun);font-size:2rem}
 .done p{color:var(--mute)}
-.hp{position:absolute;left:-9999px}
+.hp{display:none!important}
 .totop{position:fixed;right:18px;bottom:18px;z-index:30;width:46px;height:46px;border-radius:50%;background:var(--sun);color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:700;box-shadow:0 6px 20px rgba(232,116,59,.4)}
 .brand{display:inline-flex;align-items:center}.brand .mk{width:56px;height:56px;border-radius:50%;margin-right:12px;box-shadow:0 2px 10px rgba(0,0,0,.25)}@media(max-width:640px){.brand .mk{width:42px;height:42px}}
 </style>
@@ -300,7 +300,7 @@ textarea{min-height:70px;resize:vertical}
     <div class="wastrip"><div class="q"><svg viewBox="0 0 33 33" fill="#3a2418" role="img" aria-label="QR code for the Golden Hour Club WhatsApp group"><use href="#ghcqr"/></svg></div><p><b>Want in right now?</b>Scan with your phone, or <a href="https://chat.whatsapp.com/CrKr6GX7i3a2kn20al0ct5" target="_blank" rel="noopener">tap to join the WhatsApp group</a> — the conversation has already started.</p></div>
     <form id="joinform" novalidate>
       <div class="steps"><i class="on"></i><i></i><i></i></div>
-      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off">
+      <div class="hp" aria-hidden="true"><input type="text" name="ghc_trap_k7" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore data-form-type="other"></div>
 
       <fieldset class="on" data-step="1">
         <label class="f" for="f-name">Your name</label><input id="f-name" type="text" name="Name" required>
@@ -419,9 +419,10 @@ textarea{min-height:70px;resize:vertical}
   nextB.addEventListener('click',function(){
     var m=valid(step);if(m){err.textContent=m;return}
     if(step<sets.length-1){show(step+1);return}
-    if(form._honey.value)return;
-    var data={};new FormData(form).forEach(function(v,k){if(k==='_honey')return;data[k]=data[k]?data[k]+', '+v:v});
-    data._honey=form._honey.value;
+    // never drop a submission silently: a filled trap only flags the row for review
+    var trap=form.ghc_trap_k7?form.ghc_trap_k7.value:'';
+    var data={};new FormData(form).forEach(function(v,k){if(k==='ghc_trap_k7')return;data[k]=data[k]?data[k]+', '+v:v});
+    if(trap)data.Ideas='[CHECK: possible bot - hidden field held: '+trap.slice(0,80)+'] '+(data.Ideas||'');
     nextB.disabled=true;nextB.textContent='Sending…';
     fetch(SHEET,{method:'POST',mode:'no-cors',body:new URLSearchParams(data)})
       .then(function(){form.style.display='none';document.querySelector('.wastrip').style.display='none';document.getElementById('done').style.display='block';store('ghc-done','1')})
